@@ -1,0 +1,38 @@
+header{
+     background-color: black;
+     min-height: 100vh;
+ nav {
+    .menu-list {
+           ul{
+        li{
+            color: #ffffff;
+            font-size: 14px;
+            padding: 15px 25px;
+            .tile{
+                text-transform: uppercase;
+            }
+            #dropdown{
+                div{
+                    p{
+                        color: black;
+                    }
+                }
+            }
+            
+        }
+    }
+    }
+ 
+  div.wrapper-logo{
+display: flex;
+justify-content: center;
+     .logo{
+        display: block;
+        height: 100px;
+        padding: 10px;
+        border-radius: 20px;
+    }
+  }
+   
+}   
+}

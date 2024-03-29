@@ -9,7 +9,6 @@ module.exports = new GoogleStrategy(
     scope: ["email", "profile"],
   },
   async (accessToken, refreshToken, profile, done) => {
-    console.log(accessToken, refreshToken, "hello");
     const {
       displayName: name,
       emails: [{ value: email }],

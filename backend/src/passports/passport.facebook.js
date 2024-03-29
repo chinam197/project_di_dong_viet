@@ -7,7 +7,6 @@ module.exports = passport.use(
     },
     function (accessToken, refreshToken, profile, cb) {
       User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-        console.log(accessToken, refreshToken);
         return cb(err, user);
       });
     }

@@ -1,27 +1,30 @@
 const bcrypt = require("bcrypt");
-const { User, Provider } = require("../models/index");
+const { User, Provider, Administrator } = require("../models/index");
 const LocalStrategy = require("passport-local").Strategy;
 module.exports = new LocalStrategy(
   {
-    usernameField: "email",
+    usernameField: "username",
     passwordField: "password",
   },
-  async (email, password, done) => {
-    const provider = await Provider.findOne({ where: { name: "email" } });
-    const user = await User.findOne({
-      where: { email, provider_id: provider.id },
+  async (username, password, done) => {
+    const provider = await Provider.findOne({
+      where: { name: "local" },
     });
-    if (!user) {
+
+    const administrator = await Administrator.findOne({
+      where: { username, provider_id: provider.id },
+    });
+    if (!administrator) {
       return done(null, false, {
         message: "Tài khoản không tồn tại",
       });
     }
-    const result = bcrypt.compareSync(password, user.password);
+    const result = bcrypt.compareSync(password, administrator.password);
     if (!result) {
       return done(null, false, {
         message: "Mật khẩu không chính xác",
       });
     }
-    return done(null, user);
+    return done(null, administrator);
   }
 );

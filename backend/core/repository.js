@@ -38,4 +38,7 @@ module.exports = class {
   findAndCountAll(options = {}) {
     return this.model.findAndCountAll(options);
   }
+  findOrCreate(options = {}) {
+    return this.model.findOrCreate(options);
+  }
 };
