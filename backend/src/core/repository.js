@@ -7,9 +7,9 @@ module.exports = class {
     //Gọi hàm model
     return this.model.create(data);
   }
-  update(data = {}, condition = {}) {
+  update(data = {}, condition = {}, r = {}) {
     //Gọi hàm model
-    return this.model.update(data, condition);
+    return this.model.update(data, condition, r);
   }
   updateByPk(id) {
     //Gọi hàm model
@@ -27,9 +27,9 @@ module.exports = class {
     //Gọi hàm model
     return this.model.findOne(condition);
   }
-  findByPk(id) {
+  findByPk(id, condition = {}) {
     //Gọi hàm model
-    return this.model.findByPk(id);
+    return this.model.findByPk(id, condition);
   }
   findAll(options = {}) {
     //Gọi hàm model

@@ -1,9 +1,14 @@
 import React from "react";
 import Nav from "./nav/nav";
 import "./nav/style.scss";
+
 const Header = () => {
   return (
-    <header className="basis-[20%]  w-[280px] left-0 top-0 bottom-0 z-[10]">
+    <header className="flex items-center p-2">
+      <div>
+        <i className="fa-solid fa-chevron-right text-[white] chevron"></i>
+      </div>
+
       <Nav />
     </header>
   );

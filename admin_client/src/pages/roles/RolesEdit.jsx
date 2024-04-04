@@ -1,5 +1,4 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useLayoutEffect } from "react";
 import "./style.scss";
 import { useFormik, validateYupSchema } from "formik";
 import * as Yup from "yup";
@@ -7,10 +6,13 @@ import { useState, useEffect } from "react";
 import { client } from "../../config/client";
 import { useSelector, useDispatch } from "react-redux";
 import { spinerEl } from "../../redux/slice/spinerSlice";
-import { toast } from "react-toastify";
+import { useParams } from "react-router-dom";
+import { isPermission } from "../../helpers/isPermissions";
 const { onSpiner } = spinerEl.actions;
-const RolesAdd = () => {
+const RolesEdit = () => {
+  const { id } = useParams();
   const [permissions, setPermission] = useState([]);
+  const [roleIntance, setRoleIntance] = useState({});
 
   const [checkboxPermissions, isCheckboxPermission] = useState({
     users_read: false,
@@ -22,7 +24,7 @@ const RolesAdd = () => {
     roles_update: false,
     roles_delete: false,
   });
-  const navigate = useNavigate();
+
   const dispatch = useDispatch();
   const handleChecked = (e) => {
     isCheckboxPermission({
@@ -30,13 +32,33 @@ const RolesAdd = () => {
       [e.target.name]: !checkboxPermissions[e.target.name],
     });
   };
+  const handleGetRolePermission = async () => {
+    const { response, data: role } = await client.get(
+      `/api/v1/admin/roles/edit/${id}`
+    );
+    console.log(role);
+    const { data } = role;
+    data.permissions.map(({ value }) => {
+      isCheckboxPermission({
+        ...checkboxPermissions,
+        [value]: true,
+      });
+    });
+
+    setRoleIntance(role);
+  };
+  useEffect(() => {
+    handleGetRolePermission();
+  }, []);
 
   const formik = useFormik({
     initialValues: {
       role: "",
     },
     validationSchema: Yup.object({
-      role: Yup.string().required("Vui lòng nhập tên quyền"),
+      role: Yup.string()
+        .required("Vui lòng nhập tên quyền")
+        .max(100, "Tên không được vượt quá 100 ký tự"),
     }),
     onSubmit: async (values) => {
       dispatch(onSpiner(true));
@@ -49,34 +71,30 @@ const RolesAdd = () => {
       }
       try {
         const { response, data } = await client.post(
-          "/api/v1/admin/roles/add",
+          `/api/v1/admin/roles/edit/${id}`,
           {
+            id,
             name,
             isPermission,
           }
         );
+
         if (!response.ok) {
           dispatch(onSpiner(false));
           throw new Error("Server Error");
         }
-        if (response.status === 400) {
-          dispatch(onSpiner(false));
-          toast.success("Thêm quyền thất bại vuo lòng thử lại sau");
-        }
 
         dispatch(onSpiner(false));
-        navigate("/admin/roles");
-        toast.success("Tạo quyền thành công");
       } catch {}
     },
   });
+  formik.initialValues.role = roleIntance?.data?.name || "";
   const handlechange = (e) => {
     setPermission({ ...permissions, [e.target.name]: e.target.value });
   };
-
   return (
     <div className="p-10">
-      <h1 className="font-semibold">Thêm Quyền :</h1>
+      <h1 className="font-semibold">Sửa Quyền :</h1>
       <div>
         <div className="w-full md:w-1/2 px-3 py-3">
           <label
@@ -96,6 +114,7 @@ const RolesAdd = () => {
             placeholder="..."
             onChange={formik.handleChange}
             name="role"
+            defaultValue={roleIntance?.data?.name}
           />
         </div>
         <form action="" onSubmit={formik.handleSubmit}>
@@ -140,6 +159,10 @@ const RolesAdd = () => {
                       id="users.read"
                       onInput={handlechange}
                       onClick={handleChecked}
+                      defaultChecked={isPermission(
+                        roleIntance?.data?.permissions,
+                        "users_read"
+                      )}
                     />
                   </div>
                 </td>
@@ -160,6 +183,10 @@ const RolesAdd = () => {
                       id="users.creat"
                       onInput={handlechange}
                       onClick={handleChecked}
+                      defaultChecked={isPermission(
+                        roleIntance?.data?.permissions,
+                        "users_create"
+                      )}
                     />
                   </div>
                 </td>
@@ -179,6 +206,10 @@ const RolesAdd = () => {
                       id="users.update"
                       onInput={handlechange}
                       onClick={handleChecked}
+                      defaultChecked={isPermission(
+                        roleIntance?.data?.permissions,
+                        "users_update"
+                      )}
                     />
                   </div>
                 </td>
@@ -198,6 +229,10 @@ const RolesAdd = () => {
                       id="users.delete"
                       onInput={handlechange}
                       onClick={handleChecked}
+                      defaultChecked={isPermission(
+                        roleIntance?.data?.permissions,
+                        "users_delete"
+                      )}
                     />
                   </div>
                 </td>
@@ -227,6 +262,10 @@ const RolesAdd = () => {
                       id="roles.read"
                       onInput={handlechange}
                       onClick={handleChecked}
+                      defaultChecked={isPermission(
+                        roleIntance?.data?.permissions,
+                        "roles_read"
+                      )}
                     />
                   </div>
                 </td>
@@ -244,9 +283,13 @@ const RolesAdd = () => {
                       className="h-5 w-5"
                       name="roles_create"
                       value="roles.create"
-                      id="roles.creat"
+                      id="roles.create"
                       onInput={handlechange}
                       onClick={handleChecked}
+                      defaultChecked={isPermission(
+                        roleIntance?.data?.permissions,
+                        "roles_create"
+                      )}
                     />
                   </div>
                 </td>
@@ -266,6 +309,10 @@ const RolesAdd = () => {
                       id="roles.update"
                       onInput={handlechange}
                       onClick={handleChecked}
+                      defaultChecked={isPermission(
+                        roleIntance?.data?.permissions,
+                        "roles_update"
+                      )}
                     />
                   </div>
                 </td>
@@ -285,6 +332,10 @@ const RolesAdd = () => {
                       id="roles.delete"
                       onInput={handlechange}
                       onClick={handleChecked}
+                      defaultChecked={isPermission(
+                        roleIntance?.data?.permissions,
+                        "roles_delete"
+                      )}
                     />
                   </div>
                 </td>
@@ -295,7 +346,7 @@ const RolesAdd = () => {
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded p-10 my-3"
             type="submit"
           >
-            Thêm
+            Lưu
           </button>
         </form>
       </div>
@@ -303,4 +354,4 @@ const RolesAdd = () => {
   );
 };
 
-export default RolesAdd;
+export default RolesEdit;

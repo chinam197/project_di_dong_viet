@@ -20,7 +20,7 @@ const Nav = () => {
   };
 
   return (
-    <nav>
+    <nav className="transition ease-in-out delay-150 duration-300">
       <div className="wrapper-logo">
         <Link to="/">
           <img

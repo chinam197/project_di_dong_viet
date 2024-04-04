@@ -67,8 +67,8 @@ export const list = {
         key: "/users/info",
       },
       {
-        value: "Phân quyền",
-        key: "/users/roles",
+        value: "Quản lý người dùng",
+        key: "/users",
       },
     ],
   },

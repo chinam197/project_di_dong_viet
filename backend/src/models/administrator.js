@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       Administrator.belongsToMany(models.Permission, {
         foreignKey: "administrator_id",
         through: "administrators_permissions",
+        as: "permissions",
       });
     }
   }

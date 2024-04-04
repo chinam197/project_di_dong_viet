@@ -1,11 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const rolesController = require("../../../../controllers/admin/api/v1/roles.controller");
+const usersController = require("../../../../controllers/admin/api/v1/users.controller");
 const adminRouteV1 = (app) => {
   router.get("/roles", rolesController.roles);
-  // router.get("/roles/add", rolesController.getRoles);
   router.post("/roles/add", rolesController.handleAdd);
-  return app.use("/api/v1/admin", router);
+  router.get("/roles/edit/:id", rolesController.getRoles);
+  router.post("/roles/edit/:id", rolesController.handleRoleEdit);
+
+  return app.use("/api/v1/admin", router, usersController.index);
 };
 
 module.exports = adminRouteV1;

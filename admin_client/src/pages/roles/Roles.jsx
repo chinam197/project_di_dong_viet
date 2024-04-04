@@ -1,8 +1,17 @@
 import React from "react";
 import "./style.scss";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { getRoles } from "../../redux/middlewares/roles/getRoles.middleware";
 
 const Roles = () => {
+  console.log(1);
+  const dispatch = useDispatch();
+  const roles = useSelector((state) => state.getRolesSate.roleList);
+  useEffect(() => {
+    dispatch(getRoles());
+  }, []);
   return (
     <div className="p-10 wrapper-roles">
       <h1 className="font-semibold">Quản lý quyền :</h1>
@@ -37,37 +46,40 @@ const Roles = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 text-sm">
-            <tr>
-              <td className="p-2">
-                <input
-                  type="checkbox"
-                  className="h-5 w-5"
-                  defaultValue="id-2"
-                />
-              </td>
-              <td className="p-2">
-                <div>
-                  <div className="font-medium text-gray-800">
-                    Logitech Keyboard
-                  </div>
-                </div>
-              </td>
-              <td className="p-2">
-                <div className="text-left"></div>
-              </td>
-              <td className="p-2">
-                <button>
-                  <i className="fa-solid fa-wrench h-8 w-8 rounded-full p-1 hover:bg-gray-100 hover:text-blue-600 text-[14px]"></i>
-                </button>
-              </td>
-              <td className="p-2">
-                <div className="flex justify-center">
-                  <button>
-                    <i className="fa-solid fa-trash h-8 w-8 rounded-full p-1 hover:bg-gray-100 hover:text-blue-600 text-[14px]"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
+            {Array.isArray(roles?.data) &&
+              roles?.data.map(({ id, name }) => {
+                return (
+                  <tr key={id}>
+                    <td className="p-2">
+                      <input
+                        type="checkbox"
+                        className="h-5 w-5"
+                        defaultValue="id-2"
+                      />
+                    </td>
+                    <td className="p-2">
+                      <div>
+                        <div className="font-medium text-gray-800">{name}</div>
+                      </div>
+                    </td>
+                    <td className="p-2">
+                      <div className="text-left"></div>
+                    </td>
+                    <td className="p-2">
+                      <Link to={`${"/admin/roles/edit"}/${id}`}>
+                        <i className="fa-solid fa-wrench h-8 w-8 rounded-full p-1 hover:bg-gray-100 hover:text-blue-600 text-[14px]"></i>
+                      </Link>
+                    </td>
+                    <td className="p-2">
+                      <div className="flex justify-center">
+                        <button>
+                          <i className="fa-solid fa-trash h-8 w-8 rounded-full p-1 hover:bg-gray-100 hover:text-blue-600 text-[14px]"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>
