@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import "./style.scss";
 import { useFormik, validateYupSchema } from "formik";
 import * as Yup from "yup";
@@ -8,12 +8,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { spinerEl } from "../../redux/slice/spinerSlice";
 import { useParams } from "react-router-dom";
 import { isPermission } from "../../helpers/isPermissions";
+import { toast } from "react-toastify";
 const { onSpiner } = spinerEl.actions;
 const RolesEdit = () => {
   const { id } = useParams();
   const [permissions, setPermission] = useState([]);
   const [roleIntance, setRoleIntance] = useState({});
-
+  const onSpinerstate = useSelector((state) => state.onSpiner.onSpiner);
   const [checkboxPermissions, isCheckboxPermission] = useState({
     users_read: false,
     users_create: false,
@@ -24,33 +25,35 @@ const RolesEdit = () => {
     roles_update: false,
     roles_delete: false,
   });
-
+  const editPermission = [];
   const dispatch = useDispatch();
   const handleChecked = (e) => {
     isCheckboxPermission({
       ...checkboxPermissions,
-      [e.target.name]: !checkboxPermissions[e.target.name],
+      [e.target.name]: e.target.checked,
     });
   };
   const handleGetRolePermission = async () => {
+    onSpiner(true);
     const { response, data: role } = await client.get(
       `/api/v1/admin/roles/edit/${id}`
     );
-    console.log(role);
     const { data } = role;
     data.permissions.map(({ value }) => {
       isCheckboxPermission({
         ...checkboxPermissions,
         [value]: true,
       });
+      if (editPermission.indexOf(value) === -1) {
+        editPermission.push(value);
+      }
     });
-
     setRoleIntance(role);
+    onSpiner(false);
   };
   useEffect(() => {
     handleGetRolePermission();
-  }, []);
-
+  }, [onSpinerstate]);
   const formik = useFormik({
     initialValues: {
       role: "",
@@ -63,28 +66,32 @@ const RolesEdit = () => {
     onSubmit: async (values) => {
       dispatch(onSpiner(true));
       const { role: name } = values;
-      const isPermission = [];
-      for (let i in checkboxPermissions) {
-        if (checkboxPermissions[i]) {
-          isPermission.push(`${i}`);
+      const isPermissions = [];
+      Object.keys(checkboxPermissions).forEach((keys, value) => {
+        if (checkboxPermissions[keys] === true) {
+          console.log(keys);
+          isPermissions.push(keys);
         }
-      }
+      });
+      console.log(checkboxPermissions);
       try {
         const { response, data } = await client.post(
           `/api/v1/admin/roles/edit/${id}`,
           {
             id,
             name,
-            isPermission,
+            isPermissions,
           }
         );
 
         if (!response.ok) {
           dispatch(onSpiner(false));
           throw new Error("Server Error");
+          toast.error("Chinh sửa thất bại vui lòng thử lại sau!");
         }
 
         dispatch(onSpiner(false));
+        toast.success("Chỉnh sửa thành công!");
       } catch {}
     },
   });

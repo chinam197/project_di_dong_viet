@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getUsers } from "../../redux/middlewares/getUsers.middleware";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const Users = () => {
+  const navigate = useNavigate();
   const { users } = useSelector((state) => state.getUserState.userList);
+  console.log(users);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getUsers("/api/v1/admin"));
@@ -53,61 +56,13 @@ const Users = () => {
           </tr>
         </thead>
         <tbody>
-          {/* <div
-            className="absolute top-0 left-0 right-0 bottom-0
-    bg-[#0000008a]"
-          >
-            <div
-              role="status"
-              class="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2
-     
-      "
-            >
-              <div className="bg-[white] shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] w-[900px]  h-[600px] p-4">
-                <button className="bg-[black] w-[20px] h-[20px] block">
-                  <i className="fa-solid fa-xmark text-[white]"></i>
-                </button>
-                <h1 className="mt-[40px]">Phân quyền : Users</h1>
-                <div className="flex flex-col">
-                  <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
-                      <div className="overflow-hidden">
-                        <table className="min-w-full border border-neutral-200 text-center text-sm font-light text-surface dark:border-white/10 dark:text-white">
-                          <thead className="border-b border-neutral-200 font-medium dark:border-white/10">
-                            <tr>
-                              <th
-                                scope="col"
-                                className="border-e border-neutral-200 px-2 py-2 dark:border-white/10 w-[10%]"
-                              >
-                                Các loại quyền
-                              </th>
-                              <th scope="col" className="w-90%">
-                                Tên quyền
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr className="border-b border-neutral-200 dark:border-white/10">
-                              <td className="whitespace-nowrap border-e border-neutral-200 px-6 py-4 font-medium dark:border-white/10">
-                                <input type="checkbox" />
-                              </td>
-                              <td className="whitespace-nowrap border-e border-neutral-200 px-6 py-4 dark:border-white/10">
-                                Mark
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> */}
           {Array.isArray(users) && users.length ? (
             <>
-              {users.map(({ firt_name, last_name, phone, email }) => (
-                <tr className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+              {users.map(({ id, firt_name, last_name, phone, email }, i) => (
+                <tr
+                  className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  key={i}
+                >
                   <td className="p-4 w-4">
                     <div className="flex items-center">
                       <input
@@ -127,7 +82,7 @@ const Users = () => {
                     scope="row"
                     className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    <div className="flex items-center mr-3">1</div>
+                    <div className="flex items-center mr-3">{i + 1}</div>
                   </th>
                   <td className="px-4 py-3">
                     <span className="bg-primary-100 text-primary-800 text-xl font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
@@ -151,6 +106,9 @@ const Users = () => {
                         data-modal-target="delete-modal"
                         data-modal-toggle="delete-modal"
                         className="flex items-center text-[#60a5fa]   hover:text-white border border-[#60a5fa]   hover:bg-[#60a5fa]   focus:ring-4 focus:outline-none focus:ring-[#60a5fa]   font-medium rounded-lg text-sm px-3 py-2 text-center dark:border-[#60a5fa]   dark:text-[#60a5fa]   dark:hover:text-white dark:hover:bg-[#60a5fa]   dark:focus:ring-[#60a5fa]  "
+                        onClick={() => {
+                          navigate(`/users/permissions/${id}`);
+                        }}
                       >
                         Phân quyền
                       </button>

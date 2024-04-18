@@ -16,7 +16,6 @@ const Login = () => {
     usernameSpace: false,
     checkPassword: false,
   });
-
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -45,7 +44,9 @@ const Login = () => {
           }
         );
         if (data.status === 200) {
+          setIsRules({ checkPassword: true });
           dispatch(login(true));
+
           dispatch(onSpiner(false));
           toast.success("Đăng nhập thành công");
         }
@@ -57,8 +58,6 @@ const Login = () => {
         // Xử lý phản hồi từ máy chủ ở đây
       } catch (error) {
         dispatch(onSpiner(true));
-
-        console.error("Error submitting form:", error);
       }
     },
   });

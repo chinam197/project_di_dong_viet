@@ -27,7 +27,7 @@ const RolesAdd = () => {
   const handleChecked = (e) => {
     isCheckboxPermission({
       ...checkboxPermissions,
-      [e.target.name]: !checkboxPermissions[e.target.name],
+      [e.target.name]: e.target.checked,
     });
   };
 
@@ -41,10 +41,10 @@ const RolesAdd = () => {
     onSubmit: async (values) => {
       dispatch(onSpiner(true));
       const { role: name } = values;
-      const isPermission = [];
+      const isPermissions = [];
       for (let i in checkboxPermissions) {
         if (checkboxPermissions[i]) {
-          isPermission.push(`${i}`);
+          isPermissions.push(`${i}`);
         }
       }
       try {
@@ -52,7 +52,7 @@ const RolesAdd = () => {
           "/api/v1/admin/roles/add",
           {
             name,
-            isPermission,
+            isPermissions,
           }
         );
         if (!response.ok) {
@@ -61,7 +61,7 @@ const RolesAdd = () => {
         }
         if (response.status === 400) {
           dispatch(onSpiner(false));
-          toast.success("Thêm quyền thất bại vuo lòng thử lại sau");
+          toast.success("Thêm quyền thất bại vui lòng thử lại sau");
         }
 
         dispatch(onSpiner(false));

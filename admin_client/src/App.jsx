@@ -12,6 +12,7 @@ import RolesAdd from "./pages/roles/RolesAdd";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RolesEdit from "./pages/roles/RolesEdit";
+import UserRole from "./pages/userRoles/UserPermissions";
 const App = () => {
   const onLogin = useSelector((state) => state.authLogin.onLogin);
   const onSpiner = useSelector((state) => state.onSpiner.onSpiner);
@@ -32,7 +33,11 @@ const App = () => {
             <div>
               <Routes>
                 <Route path="/" index element={<Home />} />
-                <Route path="/users" element={<Users />} />
+
+                <Route path="/users">
+                  <Route index element={<Users />} />
+                  <Route path="permissions/:id" element={<UserRole />} />
+                </Route>
                 <Route path="/logout" element={<Login />} />
                 <Route />
                 <Route path="/admin/roles">

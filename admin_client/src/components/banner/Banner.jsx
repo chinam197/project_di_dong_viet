@@ -225,7 +225,7 @@ const Banner = () => {
               </a>
               {/* Dropdown menu */}
               <ul
-                className="absolute z-[1000] float-left hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg dark:bg-surface-dark data-[twe-dropdown-show]:block"
+                className="absolute  float-left hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg dark:bg-surface-dark data-[twe-dropdown-show]:block"
                 aria-labelledby="dropdownMenuButton1"
                 data-twe-dropdown-menu-ref=""
               >
@@ -294,7 +294,7 @@ const Banner = () => {
               </a>
               {/* Dropdown menu */}
               <ul
-                className="absolute z-[1000] float-left hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg dark:bg-surface-dark data-[twe-dropdown-show]:block"
+                className="absolute  float-left hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg dark:bg-surface-dark data-[twe-dropdown-show]:block"
                 aria-labelledby="dropdownMenuButton1"
                 data-twe-dropdown-menu-ref=""
               >
@@ -359,7 +359,7 @@ const Banner = () => {
               </a>
               {/* Dropdown menu */}
               <ul
-                className="absolute z-[1000] float-left hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg dark:bg-surface-dark data-[twe-dropdown-show]:block"
+                className="absolute  float-left hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg dark:bg-surface-dark data-[twe-dropdown-show]:block"
                 aria-labelledby="dropdownMenuButton1"
                 data-twe-dropdown-menu-ref=""
               >

@@ -28,35 +28,37 @@ module.exports = {
       );
     }
     //2. Kiểm tra username tồn tại
-    const administrator = await Administrator.findOne({
-      where: { username },
-    });
-    if (!administrator) {
-      return errorResponse(res, 400, "Bad Request", {
-        username: "username không tồn tại",
+    try {
+      const administrator = await Administrator.findOne({
+        where: { username },
       });
-    }
-    //3. Lấy password hash
-    const { password: hash } = administrator;
-    //4. So sánh password hash với password từ request
-    if (!bcrypt.compareSync(password, hash)) {
-      return errorResponse(res, 400, "Bad Request", {
-        Unauthorized: "Tài  khoản hoặc mật khẩu không chính xác",
-      });
-    }
-    // //5. Tạo token bằng JWT
-    // const accessToken = createAccessToken({ userId: user.id });
-    // const refreshToken = createRefreshToken();
-    // //Thêm refreshToken vào database
-    // await UserToken.create({
-    //   refresh_token: refreshToken,
-    //   user_id: user.id,
-    // });
-    // //6. Trả về Response
-    // if (!accessToken) {
-    //   return errorResponse(res, 500, "Server Error");
-    // }
-    return successResponse(res, 200, "Success");
+      if (!administrator) {
+        return errorResponse(res, 400, "Bad Request", {
+          username: "username không tồn tại",
+        });
+      }
+      //3. Lấy password hash
+      const { password: hash } = administrator;
+      //4. So sánh password hash với password từ request
+      if (!bcrypt.compareSync(password, hash)) {
+        return errorResponse(res, 400, "Bad Request", {
+          Unauthorized: "Tài  khoản hoặc mật khẩu không chính xác",
+        });
+      }
+      // //5. Tạo token bằng JWT
+      // const accessToken = createAccessToken({ userId: user.id });
+      // const refreshToken = createRefreshToken();
+      // //Thêm refreshToken vào database
+      // await UserToken.create({
+      //   refresh_token: refreshToken,
+      //   user_id: user.id,
+      // });
+      // //6. Trả về Response
+      // if (!accessToken) {
+      //   return errorResponse(res, 500, "Server Error");
+      // }
+      return successResponse(res, 200, "Success");
+    } catch {}
   },
   profile: (req, res) => {
     return successResponse(res, 200, "Success", req.user);

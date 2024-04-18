@@ -4,11 +4,38 @@ import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { getRoles } from "../../redux/middlewares/roles/getRoles.middleware";
-
+import { client } from "../../config/client";
+import { spinerEl } from "../../redux/slice/spinerSlice";
+import { toast } from "react-toastify";
+const { onSpiner } = spinerEl.actions;
 const Roles = () => {
   console.log(1);
   const dispatch = useDispatch();
   const roles = useSelector((state) => state.getRolesSate.roleList);
+  const handleDelete = async (id) => {
+    const youSure = confirm("bạn có chắc chắn muốn xóa không?");
+    if (!youSure) {
+      return;
+    }
+    dispatch(onSpiner(true));
+    const { response, data } = await client.post(
+      `/api/v1/admin/roles/delete/${id}`
+    );
+    console.log(response);
+    if (!response.ok) {
+      dispatch(onSpiner(false));
+      toast.error("Xóa thất bại");
+
+      return;
+    }
+    if (!response.status === 400) {
+      toast.error("Lỗi ở phía chúng tôi vui lòng thử lại sau!");
+    }
+    dispatch(onSpiner(false));
+    dispatch(getRoles());
+    toast.success("Xóa thành công");
+  };
+
   useEffect(() => {
     dispatch(getRoles());
   }, []);
@@ -72,7 +99,11 @@ const Roles = () => {
                     </td>
                     <td className="p-2">
                       <div className="flex justify-center">
-                        <button>
+                        <button
+                          onClick={() => {
+                            handleDelete(id);
+                          }}
+                        >
                           <i className="fa-solid fa-trash h-8 w-8 rounded-full p-1 hover:bg-gray-100 hover:text-blue-600 text-[14px]"></i>
                         </button>
                       </div>

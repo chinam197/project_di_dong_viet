@@ -7,6 +7,9 @@ const adminRouteV1 = (app) => {
   router.post("/roles/add", rolesController.handleAdd);
   router.get("/roles/edit/:id", rolesController.getRoles);
   router.post("/roles/edit/:id", rolesController.handleRoleEdit);
+  router.post("/roles/delete/:id", rolesController.handleDelete);
+  router.get("/permissions/:id", rolesController.getUsersPermission);
+  router.post("/permissions/:id", rolesController.addUserPermissions);
 
   return app.use("/api/v1/admin", router, usersController.index);
 };

@@ -1,6 +1,7 @@
 const PermissionServices = require("../../../../services/permission.service");
 const RoleServices = require("../../../../services/roles.service");
-const { Role, Permission } = require("../../../../models/index");
+const UserServices = require("../../../../services/user.service");
+const { Role, Permission, Administrator } = require("../../../../models/index");
 const {
   successResponse,
   errorResponse,
@@ -30,10 +31,10 @@ module.exports = {
 
   handleAdd: async (req, res) => {
     try {
-      const { name, isPermission } = req.body;
+      const { name, isPermissions } = req.body;
       const role = await RoleServices.postRole(name);
       const permission = await PermissionServices.createPermission(
-        isPermission
+        isPermissions
       );
       await role.addPermissions(permission);
       successResponse(res, 200, "success");
@@ -43,30 +44,37 @@ module.exports = {
   },
   handleRoleEdit: async (req, res) => {
     const { id } = req.params;
-    const { isPermission } = req.body;
+    const { isPermissions } = req.body;
+    console.log(req.body);
     try {
-      if (!isPermission) {
-        isPermission = [];
+      if (!isPermissions) {
+        isPermissions = [];
       }
       await RoleServices.roleUpdate(req.body);
       const role = await Role.findByPk(id);
-      if (role && isPermission.length) {
+      if (role && isPermissions.length > -1) {
         //Lấy được 1 mảng chứa danh sách các instance của từng permission (Đã được thêm vào database hoặc được lấy ra từ database)
         const permissionInstances = await Promise.all(
-          isPermission.map(async (value) => {
+          isPermissions.map(async (value) => {
             const [permissionInstance] = await Permission.findOrCreate({
               where: { value: value.trim() },
               defaults: { value: value.trim() },
             });
-            console.log(permissionInstance);
             return permissionInstance;
           })
         );
-        console.log("end");
         await role.setPermissions(permissionInstances);
+        return successResponse(res, 200, "success");
         // Gửi phản hồi thành công và kết thúc xử lý bằng lệnh return
-        return successResponse(res, 400, "success");
       }
+
+      // const role1 = await Role.findByPk(id, {
+      //   include: {
+      //     model: Permission,
+      //     as: "permission",
+      //   },
+      // });
+      // console.log(role1);
     } catch {
       // Gửi phản hồi lỗi
       console.log("err");
@@ -74,5 +82,66 @@ module.exports = {
     }
 
     // Bạn không cần gọi res.json() ở đây nữa vì đã gửi phản hồi ở trên
+  },
+  handleDelete: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const role = await Role.findByPk(id, {
+        include: [
+          {
+            model: Permission,
+            as: "permissions",
+          },
+          {
+            model: Administrator,
+            as: "administrators",
+          },
+        ],
+      });
+      if (role) {
+        await role.removePermissions(role.permissions);
+
+        await role.removeAdministrators(role.administrators);
+
+        await role.destroy();
+
+        successResponse(res, 200, "Success");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  //addUserPermissions thêm quyền cho người dùng
+  addUserPermissions: async (req, res) => {
+    const { id } = req.params;
+    const { addRoles } = req.body;
+    try {
+      if (!addRoles) {
+        addRoles = [];
+      }
+      const roles = Array.isArray(addRoles) ? addRoles : [addRoles];
+      const user = await Administrator.findByPk(id);
+      if (user && roles.length) {
+        const roleIntances = await Promise.all(
+          roles.map((roleId) => Role.findByPk(roleId))
+        );
+
+        await user.setRoles(roleIntances);
+        return successResponse(res, 200, "Success");
+      } else {
+        return errorResponse(req, 401, "Server Error");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  getUsersPermission: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const userPermission = await UserServices.getUserPermissionServices(id);
+
+      res.json({ userPermission });
+    } catch {}
   },
 };

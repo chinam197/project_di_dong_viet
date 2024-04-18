@@ -4,4 +4,7 @@ module.exports = {
   getUsers() {
     return userRepository.getLastestUser();
   },
+  getUserPermissionServices(id) {
+    return userRepository.getUserPermissionRepository(id);
+  },
 };
